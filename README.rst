@@ -16,8 +16,8 @@ intended to package small projects of the sort that frequently are not picked
 up by larger package managers like Aptitude, Yum, or Homebrew. In particular,
 it aims to make packaging as easy an fuss-free for developers as possible.
 
-LitePkg's roots like in the Toolchest_ of Charles Daniels, which set out
-with similar goals. LitePkg starts fresh with the insights gained from the
+LitePkg's roots lie in the Toolchest_ of Charles Daniels, which set out with
+similar goals. LitePkg starts fresh with the insights gained from the
 toolchest.
 
 LitePkg, aside from the Toolchest, draws inspiration from the BSD ports

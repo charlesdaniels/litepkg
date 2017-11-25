@@ -27,3 +27,5 @@ docset-installed.txt
 *.dat
 *.dep
 *.locuser
+
+__pycache__

@@ -1,0 +1,17 @@
+# this is a comment
+
+# the project we are packaging is hosted in a git repository
+pragma git
+
+# URL to clone from
+assign url git://example.com/someproject.git
+
+# output directory to clone the repository to
+assign dir someproject
+
+# set the branch (default is "master")
+assign branch v1-RELEASE
+
+# specify what files relative to $dir need to be linked into PATH
+link bin/sometool  # this is relative to the dir assigned above
+link bin/anothertool
