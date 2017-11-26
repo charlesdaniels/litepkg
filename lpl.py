@@ -13,6 +13,19 @@ parser.add_argument("--input", "-i", default="/dev/stdin",
 parser.add_argument("--debug", default=False, action="store_true",
                     help="Assert for debug output")
 
+def directive_pragma(tokens, state):
+    logging.debug("\tprocessing tokens '{}' as pragma".format(tokens))
+
+def directive_assign(tokens, state):
+    logging.debug("\tprocessing tokens '{}' as assign".format(tokens))
+
+def directive_link(tokens, state):
+    logging.debug("\tprocessing tokens '{}' as link".format(tokens))
+
+directive_handlers = {"pragma": directive_pragma,
+                      "assign": directive_assign,
+                      "link"  : directive_link}
+
 def tokenize_line(line):
     """tokenize_line
 
@@ -71,8 +84,24 @@ def main():
                       .format(args.input, fin))
         exit(1)
 
+    state = {}
+    linum = 0
+
     for line in fin:
+        linum += 1
         tok = tokenize_line(line)
+
+        if tok is None:
+            # line requires no further processing
+            continue
+
+        # pass the line to an appropriate handler, or panic
+        if tok['directive'] in directive_handlers:
+            directive_handlers[tok['directive']](tok, state)
+        else:
+            logging.error("Unrecognized directive '{}' on line {}"
+                          .format(tok['directive'], linum))
+            continue  # change to exit(1) once all directives impelemented
 
 
 
