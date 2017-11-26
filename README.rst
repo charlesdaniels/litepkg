@@ -89,6 +89,8 @@ In lieu of a formal specification, consider some LPL samples.
         assign url...
         assign name coolfile
 
+**NOTE**: for up-to-date samples, please see the `Examples.`_
+
 LPL Overview
 ------------
 
@@ -154,3 +156,4 @@ If a require statement fails, the LPL script crashes.
 
 
 .. _Toolchest: http://cdaniels.net/projects.html#the-toolchest
+.. _`Examples.`: ./examples

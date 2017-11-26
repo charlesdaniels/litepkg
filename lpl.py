@@ -64,6 +64,21 @@ def directive_link(tokens, state):
     if not state['fetch_done']:
         run_fetch(state)
 
+    link_src = tokens['parameters'][0]
+    link_name = os.path.basename(link_src)
+    logging.debug("linking '{}'".format(link_name))
+    if state['pragma'] == 'single':
+
+        output_file_path = os.path.join(state['env']['lpl_pkg_root'],
+                                        state['variables']['prefix'],
+                                        link_src)
+        output_file_path = os.path.expanduser(output_file_path)
+        bin_path = os.path.join(state['env']['lpl_bin_dir'],
+                                link_name)
+        bin_path = os.path.expanduser(bin_path)
+        make_executable(output_file_path)
+        os.symlink(output_file_path, bin_path)
+
     return state
 
 def directive_envconf(tokens, state):
@@ -101,7 +116,8 @@ def assert_env_initialized(state):
 
     for field in allowed_envconf_fields:
         if field not in state['env']:
-            logging.error("env field '{}' is not initialized")
+            logging.error("env field '{}' is not initialized"
+                          .format(field))
             raise Exception("")
 
     assert_pkg_root(state)
@@ -174,6 +190,29 @@ def assert_pkg_root(state):
         logging.error("lpl_pkg_root '{}' does not exist".format(pkg_root))
         raise Exception("")
 
+def assert_pkg_prefix(state):
+    """assert_pkg_prefix
+
+    assert that the prefix for the package exists as specified in the
+    prefix variable
+
+    :param state:
+    """
+
+    assert_pkg_root(state)
+    assert_variable(state, "prefix")
+
+    pkg_root = state['env']['lpl_pkg_root']
+    pkg_root = os.path.expanduser(pkg_root)
+    prefix_dir = os.path.join(pkg_root, state['variables']['prefix'])
+    if not os.path.exists(prefix_dir):
+        os.makedirs(prefix_dir, exist_ok=True)
+
+    if not os.path.exists(prefix_dir):
+        logging.error("prefix_dir '{}' does not exist".format(prefix_dir))
+        raise Exception("")
+
+
 ########10########20########30# utility methods 50########60########70########80
 
 def run_fetch(state):
@@ -187,6 +226,7 @@ def run_fetch(state):
     assert_pragma_set(state)
     assert_variable(state, "url")
     assert_variable(state, "name")
+    assert_pkg_prefix(state)
 
     fetch_URL = state['variables']['url']
     fetch_name = state['variables']['name']
@@ -196,18 +236,24 @@ def run_fetch(state):
     if state['pragma'] == 'single':
 
         output_file_path = os.path.join(state['env']['lpl_pkg_root'],
+                                        state['variables']['prefix'],
                                         fetch_name)
         output_file_path = os.path.expanduser(output_file_path)
 
         if os.path.exists(output_file_path):
             os.remove(output_file_path)
 
-        wget.download(fetch_URL, output_file_path)
+        wget.download(fetch_URL, output_file_path, None)
 
     else:
 
         logging.error("Unsupported pragma for run_fetch '{}'"
                       .format(state['pragma']))
+
+def make_executable(path):
+    mode = os.stat(path).st_mode
+    mode |= (mode & 0o444) >> 2    # copy R bits to X
+    os.chmod(path, mode)
 
 ########10########20####### language implementation ######60########70########80
 
@@ -292,7 +338,7 @@ def execute(data, state = {}):
 
 ########10########20########30### static data ##50########60########70########80
 
-allowed_envconf_fields = ["lpl_pkg_root"]
+allowed_envconf_fields = ["lpl_pkg_root", "lpl_bin_dir"]
 
 directive_handlers = {"pragma" : directive_pragma,
                       "assign" : directive_assign,

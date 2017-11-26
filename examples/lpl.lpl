@@ -1,4 +1,5 @@
 pragma single
 assign url https://raw.githubusercontent.com/charlesdaniels/litepkg/master/lpl.py
-assign name lpl
-link lpl
+assign name lpl.py
+assign prefix lpl
+link lpl.py
