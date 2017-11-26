@@ -168,6 +168,7 @@ def logWithExplicitLevel(msg, level):
 #                representation
 def prettyLog(obj, level="DEBUG", msg=''):
     prettyStr = pprint.pformat(obj)  # prettify the object
-    prettyStr = msg + prettyStr
-    logWithExplicitLevel(prettyStr, level)  # now perform the logging
+    prettyStr = msg + "\n" + prettyStr
+    for line in prettyStr.split("\n"):
+        logWithExplicitLevel(line, level)  # now perform the logging
 
