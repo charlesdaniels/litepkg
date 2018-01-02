@@ -1,2 +1,0 @@
-envconf lpl_pkg_root ~/.local/lpl/pkg
-envconf lpl_bin_dir ~/bin
